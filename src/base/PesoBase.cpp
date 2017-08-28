@@ -5,7 +5,9 @@
 // List of header files that need to be included...
 // -------------------------------------------------------------------------
 
-//# include ""
+# include "../post_proc_types/SumField.hpp"
+# include "../post_proc_types/AveField.hpp"
+# include "../post_proc_types/HoshenKopelman.hpp"
 
 // -------------------------------------------------------------------------
 // Factory method: this function returns an object determined
@@ -16,16 +18,12 @@
 PesoBase* PesoBase::PesoObjectFactory(string specifier)
 {
 
-    // ------------------------------------------------
-    // 'GetPot' object containing input parameters:
-    // ------------------------------------------------
-
-    GetPot InParams("input.dat");
-
     // -----------------------------------
     // return the requested object:
     // -----------------------------------
 
-    //if (specifier == "LBApp/") return new LBApp(InParams);
+    if (specifier == "SumField/") return new SumField();
+    if (specifier == "AveField/") return new AveField();
+    if (specifier == "HoshenKopelman/") return new HoshenKopelman();
 
 }

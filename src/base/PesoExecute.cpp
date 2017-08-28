@@ -1,7 +1,6 @@
 
 # include "PesoExecute.hpp"
 # include "../utils/GetPot"
-# include <mpi.h>
 # include <cstdlib>
 using namespace std;
 
@@ -45,7 +44,7 @@ void PesoExecute::createPesoObjects()
     // 'GetPot' object containing input parameters:
     // ------------------------------------------------
 
-    GetPot InParams("input.dat");
+    GetPot InParams("inputPeso.dat");
 
     // ------------------------------------------------
     // make vector of input section names:

@@ -17,7 +17,10 @@ struct vtkField {
     // methods
     vtkField();
     ~vtkField();
+    void defineVectorSize(int,int,int);
     void readVTKFile(std::string,int);
+    double sumVals();
+    double aveVals();
 
 };
 
