@@ -26,4 +26,7 @@ PesoBase* PesoBase::PesoObjectFactory(string specifier)
     if (specifier == "AveField/") return new AveField();
     if (specifier == "HoshenKopelman/") return new HoshenKopelman();
 
+    // if unexpected specifier, return a null pointer
+    return nullptr;
+
 }

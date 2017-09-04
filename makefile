@@ -3,25 +3,22 @@
 #################
 
 SHELL = /bin/bash
-CC = mpicxx
+CC = g++
 TARGET_PATH = ./bin
 TARGET_NAME_OPT = peso
 TARGET_NAME_DBG = dbg$(TARGET_NAME_OPT)
 OBJ_PATH = ./obj
 CFLAGS = -Wall
-DBG_CFLAGS = $(CFLAGS) -g -D_DEBUG
-OPT_CFLAGS = $(CFLAGS) -O3
-LFLAGS = -lfftw3_mpi -lfftw3 -lm
+DBG_CFLAGS = $(CFLAGS) -g -D_DEBUG -std=c++11
+OPT_CFLAGS = $(CFLAGS) -O3 -std=c++11
+LFLAGS = -lm
 
 #################
 # Source
 #################
 
-CPP_FILES = $(wildcard	src/lattice_boltzmann/*.cpp \
-						src/phase_field/*.cpp \
-						src/phase_field/*/*.cpp \
-						src/particle_dynamics/*.cpp \
-						src/particle_dynamics/*/*.cpp \
+CPP_FILES = $(wildcard	src/post_proc_types/*.cpp \
+						src/utils/*.cpp \
 						src/base/*.cpp)
 
 #################

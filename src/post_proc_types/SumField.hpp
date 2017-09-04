@@ -8,21 +8,21 @@
 
 class SumField : public PesoBase {
 
-private:
+    private:
 
-	vtkField c;
-	std::string tagName;
-    int tagInterval;
-    int numFiles;
-	int nx,ny,nz;
+        vtkField c;
+        std::string tagName;
+        int tagInterval;
+        int numFiles;
+        int nx,ny,nz;
 
-public:
+    public:
 
-	SumField();
-	~SumField();
-	void setupPostProc();
-	void executePostProc();
-    void outputData(int,double);
+        SumField();
+        ~SumField();
+        void setupPostProc();
+        void executePostProc();
+        void outputData(int,double);
 
 };
 

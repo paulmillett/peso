@@ -54,7 +54,7 @@ void vtkField::defineVectorSize(int x, int y, int z)
 
 double vtkField::sumVals()
 {
-    double sum;
+    double sum = 0.0;
     for (int i=0; i<nxyz; i++) {
         sum += a[i];
     }
@@ -69,7 +69,7 @@ double vtkField::sumVals()
 
 double vtkField::aveVals()
 {
-    double sum;
+    double sum = 0.0;
     for (int i=0; i<nxyz; i++) {
         sum += a[i];
     }
@@ -89,11 +89,11 @@ void vtkField::readVTKFile(std::string tagname, int tagnum)
     // Define the file location and name:
     // -----------------------------------
 
- 	ifstream infile;
- 	std::stringstream filenamecombine;
- 	filenamecombine << "vtkoutput/" << tagname << "_" << tagnum << ".vtk";
- 	string filename = filenamecombine.str();
- 	infile.open(filename.c_str(), ios::in);
+    ifstream infile;
+    std::stringstream filenamecombine;
+    filenamecombine << "vtkoutput/" << tagname << "_" << tagnum << ".vtk";
+    string filename = filenamecombine.str();
+    infile.open(filename.c_str(), ios::in);
 
     // -----------------------------------
     // Read VTK file header:

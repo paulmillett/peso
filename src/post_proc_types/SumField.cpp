@@ -71,10 +71,10 @@ void SumField::executePostProc()
 
 void SumField::outputData(int step, double val)
 {
- 	ofstream outfile;
- 	std::stringstream filenamecombine;
- 	filenamecombine << "postoutput/" << tagName << "_" << "SumField.dat";
- 	string filename = filenamecombine.str();
- 	outfile.open(filename.c_str(), ios::out | ios::app);
+    ofstream outfile;
+    std::stringstream filenamecombine;
+    filenamecombine << "postoutput/" << tagName << "_" << "SumField.dat";
+    string filename = filenamecombine.str();
+    outfile.open(filename.c_str(), ios::out | ios::app);
     outfile << step << " " << val << endl;
 }
