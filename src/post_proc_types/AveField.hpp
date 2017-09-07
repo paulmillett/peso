@@ -4,25 +4,23 @@
 
 # include "../base/PesoBase.hpp"
 # include "../utils/vtkField.hpp"
+# include "../utils/simInfo.hpp"
 
 
 class AveField : public PesoBase {
 
-private:
+    private:
 
-	vtkField c;
-	std::string tagName;
-    int tagInterval;
-    int numFiles;
-	int nx,ny,nz;
+        vtkField c;
+        std::string tagName;
+        simInfo conc;
 
-public:
+    public:
 
-	AveField();
-	~AveField();
-	void setupPostProc();
-	void executePostProc();
-	void outputData(int,double);
+        AveField();
+        ~AveField();
+        void setupPostProc();
+        void executePostProc();
 
 };
 

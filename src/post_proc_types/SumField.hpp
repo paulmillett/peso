@@ -4,6 +4,7 @@
 
 # include "../base/PesoBase.hpp"
 # include "../utils/vtkField.hpp"
+# include "../utils/simInfo.hpp"
 
 
 class SumField : public PesoBase {
@@ -11,10 +12,8 @@ class SumField : public PesoBase {
     private:
 
         vtkField c;
+        simInfo conc;
         std::string tagName;
-        int tagInterval;
-        int numFiles;
-        int nx,ny,nz;
 
     public:
 
@@ -22,7 +21,6 @@ class SumField : public PesoBase {
         ~SumField();
         void setupPostProc();
         void executePostProc();
-        void outputData(int,double);
 
 };
 

@@ -82,27 +82,24 @@ double vtkField::aveVals()
 // Read data from 'vtk' file:
 // -------------------------------------------------------------------------
 
-void vtkField::readVTKFile(std::string tagname, int tagnum)
+void vtkField::readVTKFile(std::string filePath)
 {
 
     // -----------------------------------
-    // Define the file location and name:
+    // Open vtk file:
     // -----------------------------------
 
     ifstream infile;
-    std::stringstream filenamecombine;
-    filenamecombine << "vtkoutput/" << tagname << "_" << tagnum << ".vtk";
-    string filename = filenamecombine.str();
-    infile.open(filename.c_str(), ios::in);
+    infile.open(filePath.c_str(), ios::in);
+    if(!infile.is_open())
+    {
+        cout << "could not open " << filePath << " for reading!\n";
+        throw 1;
+    }
 
     // -----------------------------------
     // Read VTK file header:
     // -----------------------------------
-
-    int nnxyz;
-    int nnx,nny,nnz;
-    int orx,ory,orz;
-    int spx,spy,spz;
 
     std::string line;
     getline(infile,line);  // line 1
@@ -110,20 +107,19 @@ void vtkField::readVTKFile(std::string tagname, int tagnum)
     getline(infile,line);  // line 3
     getline(infile,line);  // line 4
     getline(infile,line);  // line 5
-    infile >> line >> nnx >> nny >> nnz;  // DIMENSIONS
-    infile >> line >> orx >> ory >> orz;  // ORIGIN
-    infile >> line >> spx >> spy >> spz;  // SPACING
-    getline(infile,line);
-    infile >> line >> nnxyz;
-    getline(infile,line);
-    getline(infile,line);
-    getline(infile,line);
+    getline(infile,line);  // line 6
+    getline(infile,line);  // line 7
+    getline(infile,line);  // line 8
+    getline(infile,line);  // line 9
+    getline(infile,line);  // line 10
+    getline(infile,line);  // line 11
+    getline(infile,line);  // line 12
 
     // -----------------------------------
     // Read data:
     // -----------------------------------
 
-    for (int i=0; i<nnxyz; i++) {
+    for (int i=0; i<nxyz; i++) {
         infile >> a[i];
     }
 

@@ -4,6 +4,7 @@
 
 # include "../base/PesoBase.hpp"
 # include "../utils/vtkField.hpp"
+# include "../utils/simInfo.hpp"
 
 
 class HoshenKopelman : public PesoBase {
@@ -12,6 +13,7 @@ class HoshenKopelman : public PesoBase {
 
         vtkField c;
         std::string tagName;
+        simInfo conc;
 
     public:
 
