@@ -8,17 +8,17 @@
 
 class HoshenKopelman : public PesoBase {
 
-private:
+    private:
 
-	vtkField c;
-	std::string tagName;
+        vtkField c;
+        std::string tagName;
 
-public:
+    public:
 
-	HoshenKopelman();
-	~HoshenKopelman();
-	void setupPostProc();
-	void executePostProc();
+        HoshenKopelman();
+        ~HoshenKopelman();
+        void setupPostProc();
+        void executePostProc();
 
 };
 

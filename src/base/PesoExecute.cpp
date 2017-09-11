@@ -28,7 +28,6 @@ PesoExecute::PesoExecute()
 
 PesoExecute::~PesoExecute()
 {
-    // MPI::Finalize();
 }
 
 
@@ -77,7 +76,7 @@ void PesoExecute::createPesoObjects()
     }
 
     // ------------------------------------------------
-    // loop over executable objects, initializing each:
+    // loop over executable objects, setting up each:
     // ------------------------------------------------
 
     for (int i=0; i<pesoapps.size(); i++) {

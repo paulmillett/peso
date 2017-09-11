@@ -22,7 +22,6 @@ HoshenKopelman::HoshenKopelman() : c()
 
 HoshenKopelman::~HoshenKopelman()
 {
-
 }
 
 
@@ -33,11 +32,8 @@ HoshenKopelman::~HoshenKopelman()
 
 void HoshenKopelman::setupPostProc()
 {
-    // see if data is read from file correctly:
-    int ntag = 0;
-    c.readVTKFile(tagName,ntag);
-    //cout << c.a[0] << endl;
-    //cout << c.a[32767] << endl;
+    c.setTagName(tagName);
+    c.getSimInfo();
 }
 
 
@@ -48,5 +44,4 @@ void HoshenKopelman::setupPostProc()
 
 void HoshenKopelman::executePostProc()
 {
-
 }

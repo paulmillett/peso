@@ -13,11 +13,6 @@ SumField::SumField() : c()
 {
     GetPot InParams("inputPeso.dat");
     tagName = InParams("SumField/tagName","c1");
-    numFiles = InParams("SumField/numFiles",0);
-    tagInterval = InParams("SumField/tagInterval",1);
-    nx = InParams("SumField/nx",1);
-    ny = InParams("SumField/ny",1);
-    nz = InParams("SumField/nz",1);    
 }
 
 
@@ -39,7 +34,8 @@ SumField::~SumField()
 
 void SumField::setupPostProc()
 {
-    c.defineVectorSize(nx,ny,nz);
+    c.setTagName(tagName);
+    c.getSimInfo();
 }
 
 
@@ -50,31 +46,35 @@ void SumField::setupPostProc()
 
 void SumField::executePostProc()
 {
+    // open file for writing output
+    ofstream outfile;
+    std::stringstream filenamecombine;
+    filenamecombine << "postoutput/" << tagName << "_" << "SumField.dat";
+    string filename = filenamecombine.str();
+    outfile.open(filename.c_str(), ios::out);
+    if(!outfile.is_open())
+    {
+        cout << "could not open " << filename << " for writing";
+        cout << " sum post-processor output!\n";
+        throw 1;
+    }
+
+    // write output file header
+    outfile << "step," << tagName << "sum\n";
+
+    // run post processor on all vtk files
     int tagNum = 0;
-    for (int f=0; f<numFiles; f++) {
+    for (size_t f=0; f<c.vtkFiles.size(); f++) 
+    {
         // read in current file data:
-        if (f == 0) tagNum = 1;
-        if (f  > 0) tagNum = tagInterval*f;
-        c.readVTKFile(tagName,tagNum);
+        c.readVTKFile(c.vtkFiles.at(f));
         // calculate summation:
         double cSum = c.sumVals();
         // write output:
-        outputData(tagNum,cSum);
+        tagNum = c.outputInterval*f;
+        outfile << tagNum << "," << cSum << endl;
     }
-}
 
-
-
-// -------------------------------------------------------------------------
-// Output data to file:
-// -------------------------------------------------------------------------
-
-void SumField::outputData(int step, double val)
-{
- 	ofstream outfile;
- 	std::stringstream filenamecombine;
- 	filenamecombine << "postoutput/" << tagName << "_" << "SumField.dat";
- 	string filename = filenamecombine.str();
- 	outfile.open(filename.c_str(), ios::out | ios::app);
-    outfile << step << " " << val << endl;
+    // close output file
+    outfile.close();
 }

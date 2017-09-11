@@ -12,16 +12,16 @@ using namespace std;
 
 class PesoExecute {
 
-private:
+    private:
 
-    vector<PesoBase*> pesoapps;
-    
-public:
+        vector<PesoBase*> pesoapps;
 
-    PesoExecute();
-    ~PesoExecute();
-    void createPesoObjects();
-    void executePesoPostProc();
+    public:
+
+        PesoExecute();
+        ~PesoExecute();
+        void createPesoObjects();
+        void executePesoPostProc();
 
 };
 

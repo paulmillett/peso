@@ -3,15 +3,15 @@
 #################
 
 SHELL = /bin/bash
-CC = mpicxx
+CC = g++
 TARGET_PATH = ./bin
 TARGET_NAME_OPT = peso
 TARGET_NAME_DBG = dbg$(TARGET_NAME_OPT)
 OBJ_PATH = ./obj
 CFLAGS = -Wall
-DBG_CFLAGS = $(CFLAGS) -g -D_DEBUG
-OPT_CFLAGS = $(CFLAGS) -O3
-LFLAGS = -lfftw3_mpi -lfftw3 -lm
+DBG_CFLAGS = $(CFLAGS) -g -D_DEBUG -std=c++11
+OPT_CFLAGS = $(CFLAGS) -O3 -std=c++11
+LFLAGS = -lm
 
 #################
 # Source
@@ -19,7 +19,7 @@ LFLAGS = -lfftw3_mpi -lfftw3 -lm
 
 CPP_FILES = $(wildcard	src/utils/*.cpp \
                         src/post_proc_types/*.cpp \
-						src/base/*.cpp)
+            						src/base/*.cpp)
 
 #################
 # Lists
