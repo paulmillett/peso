@@ -8,12 +8,10 @@ using namespace std;
 // Constructor:
 // -------------------------------------------------------------------------
 
-HoshenKopelman::HoshenKopelman() : c(),conc()
+HoshenKopelman::HoshenKopelman() : c()
 {
     GetPot InParams("inputPeso.dat");
     tagName = InParams("HoshenKopelman/tagName","c1");
-    conc.setTagName(tagName);
-    conc.getSimInfo();
 }
 
 
@@ -34,6 +32,8 @@ HoshenKopelman::~HoshenKopelman()
 
 void HoshenKopelman::setupPostProc()
 {
+    c.setTagName(tagName);
+    c.getSimInfo();
 }
 
 

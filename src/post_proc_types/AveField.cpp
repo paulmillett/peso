@@ -9,12 +9,10 @@ using namespace std;
 // Constructor:
 // -------------------------------------------------------------------------
 
-AveField::AveField() : c(),conc()
+AveField::AveField() : c()
 {
     GetPot InParams("inputPeso.dat");
     tagName = InParams("AveField/tagName","c1");
-    conc.setTagName(tagName);
-    conc.getSimInfo();
 }
 
 
@@ -35,7 +33,8 @@ AveField::~AveField()
 
 void AveField::setupPostProc()
 {
-    c.defineVectorSize(conc.nx,conc.ny,conc.nz);
+    c.setTagName(tagName);
+    c.getSimInfo();
 }
 
 
@@ -64,15 +63,14 @@ void AveField::executePostProc()
 
     // run post processor on all vtk files
     int tagNum = 0;
-    for (size_t f=0; f<conc.vtkFiles.size(); f++) 
+    for (size_t f=0; f<c.vtkFiles.size(); f++) 
     {
         // read in current file data:
-        if (f == 0) tagNum = 1;
-        if (f  > 0) tagNum = conc.outputInterval*f;
-        c.readVTKFile(conc.vtkFiles.at(f));
+        c.readVTKFile(c.vtkFiles.at(f));
         // calculate summation:
         double cAve = c.aveVals();
         // write output:
+        tagNum = c.outputInterval*f;
         outfile << tagNum << "," << cAve << endl;
     }
 

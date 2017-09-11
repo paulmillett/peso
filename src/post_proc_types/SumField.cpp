@@ -9,12 +9,10 @@ using namespace std;
 // Constructor:
 // -------------------------------------------------------------------------
 
-SumField::SumField() : c(),conc()
+SumField::SumField() : c()
 {
     GetPot InParams("inputPeso.dat");
     tagName = InParams("SumField/tagName","c1");
-    conc.setTagName(tagName);
-    conc.getSimInfo();
 }
 
 
@@ -36,7 +34,8 @@ SumField::~SumField()
 
 void SumField::setupPostProc()
 {
-    c.defineVectorSize(conc.nx,conc.ny,conc.nz);
+    c.setTagName(tagName);
+    c.getSimInfo();
 }
 
 
@@ -65,15 +64,14 @@ void SumField::executePostProc()
 
     // run post processor on all vtk files
     int tagNum = 0;
-    for (size_t f=0; f<conc.vtkFiles.size(); f++) 
+    for (size_t f=0; f<c.vtkFiles.size(); f++) 
     {
         // read in current file data:
-        if (f == 0) tagNum = 1;
-        if (f  > 0) tagNum = conc.outputInterval*f;
-        c.readVTKFile(conc.vtkFiles.at(f));
+        c.readVTKFile(c.vtkFiles.at(f));
         // calculate summation:
         double cSum = c.sumVals();
         // write output:
+        tagNum = c.outputInterval*f;
         outfile << tagNum << "," << cSum << endl;
     }
 
