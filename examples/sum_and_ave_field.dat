@@ -1,0 +1,11 @@
+
+[SumField]
+    app = true
+    tagName = c1
+[]
+
+
+[AveField]
+    app = true
+    tagName = c1
+[]

@@ -8,21 +8,17 @@
 
 class AveField : public PesoBase {
 
-private:
+    private:
 
-	vtkField c;
-	std::string tagName;
-    int tagInterval;
-    int numFiles;
-	int nx,ny,nz;
+        vtkField c;
+        std::string tagName;
 
-public:
+    public:
 
-	AveField();
-	~AveField();
-	void setupPostProc();
-	void executePostProc();
-	void outputData(int,double);
+        AveField();
+        ~AveField();
+        void setupPostProc();
+        void executePostProc();
 
 };
 

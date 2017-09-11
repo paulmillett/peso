@@ -8,6 +8,7 @@
 # include "../post_proc_types/SumField.hpp"
 # include "../post_proc_types/AveField.hpp"
 # include "../post_proc_types/HoshenKopelman.hpp"
+# include "../post_proc_types/ParticleAttachment.hpp"
 
 // -------------------------------------------------------------------------
 // Factory method: this function returns an object determined
@@ -25,6 +26,7 @@ PesoBase* PesoBase::PesoObjectFactory(string specifier)
     if (specifier == "SumField/") return new SumField();
     if (specifier == "AveField/") return new AveField();
     if (specifier == "HoshenKopelman/") return new HoshenKopelman();
+    if (specifier == "ParticleAttachment/") return new ParticleAttachment();
 
     // if unexpected specifier, return a null pointer
     return nullptr;

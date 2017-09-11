@@ -13,11 +13,6 @@ AveField::AveField() : c()
 {
     GetPot InParams("inputPeso.dat");
     tagName = InParams("AveField/tagName","c1");
-    numFiles = InParams("AveField/numFiles",0);
-    tagInterval = InParams("AveField/tagInterval",1);
-    nx = InParams("AveField/nx",1);
-    ny = InParams("AveField/ny",1);
-    nz = InParams("AveField/nz",1);  
 }
 
 
@@ -28,7 +23,6 @@ AveField::AveField() : c()
 
 AveField::~AveField()
 {
-
 }
 
 
@@ -39,7 +33,8 @@ AveField::~AveField()
 
 void AveField::setupPostProc()
 {
-    c.defineVectorSize(nx,ny,nz);
+    c.setTagName(tagName);
+    c.getSimInfo();
 }
 
 
@@ -50,31 +45,35 @@ void AveField::setupPostProc()
 
 void AveField::executePostProc()
 {
-    int tagNum = 0;
-    for (int f=0; f<numFiles; f++) {
-        // read in current file data:
-        if (f == 0) tagNum = 1;
-        if (f  > 0) tagNum = tagInterval*f;
-        c.readVTKFile(tagName,tagNum);
-        // calculate summation:
-        double cAve = c.aveVals();
-        // write output:
-        outputData(tagNum,cAve);
-    }
-}
-
-
-
-// -------------------------------------------------------------------------
-// Output data to file:
-// -------------------------------------------------------------------------
-
-void AveField::outputData(int step, double val)
-{
+    // open file for writing output
     ofstream outfile;
     std::stringstream filenamecombine;
     filenamecombine << "postoutput/" << tagName << "_" << "AveField.dat";
     string filename = filenamecombine.str();
-    outfile.open(filename.c_str(), ios::out | ios::app);
-    outfile << step << " " << val << endl;
+    outfile.open(filename.c_str(), ios::out);
+    if(!outfile.is_open())
+    {
+        cout << "could not open " << filename << " for writing";
+        cout << " sum post-processor output!\n";
+        throw 1;
+    }
+
+    // write output file header
+    outfile << "step," << tagName << "ave\n";
+
+    // run post processor on all vtk files
+    int tagNum = 0;
+    for (size_t f=0; f<c.vtkFiles.size(); f++) 
+    {
+        // read in current file data:
+        c.readVTKFile(c.vtkFiles.at(f));
+        // calculate summation:
+        double cAve = c.aveVals();
+        // write output:
+        tagNum = c.outputInterval*f;
+        outfile << tagNum << "," << cAve << endl;
+    }
+
+    // close output file
+    outfile.close();
 }
