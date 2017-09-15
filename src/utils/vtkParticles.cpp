@@ -179,7 +179,10 @@ void vtkParticles::getFileInfo()
     size_t dot = lf.find(".");
     std::string steps = lf.substr(underScore+1,dot-1);
     numSimSteps = strtol(steps.c_str(),NULL,10);
-    outputInterval = numSimSteps/(numFiles-1);
+    if(numFiles > 1)
+        outputInterval = numSimSteps/(numFiles-1);
+    else
+        outputInterval = numSimSteps;
 }
 
 

@@ -6,6 +6,8 @@
 # include "../utils/vtkField.hpp"
 # include "../utils/vtkParticles.hpp"
 # include <vector>
+# include <sstream>
+# include <fstream>
 
 
 class ParticleAttachment : public PesoBase {
@@ -21,13 +23,14 @@ class ParticleAttachment : public PesoBase {
         std::string xiTagName;
         std::string partTagName;
         std::string outFileName;
-        bool deleteTypeInfo;
+        bool generateTypeInfo;
         std::vector<int> particleType;
         void writeParticleTypeData(std::string filePath);
         void deleteParticleTypeData(std::string filePath);
         double c1thresh;
         double c2thresh;
         double cpthresh;
+        std::ofstream outfile;
 
         // methods
         int calcNumOnInterface();
@@ -38,7 +41,6 @@ class ParticleAttachment : public PesoBase {
         ~ParticleAttachment();
         void setupPostProc();
         void executePostProc();
-        void test();
 
 };
 
