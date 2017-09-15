@@ -17,9 +17,9 @@ LFLAGS = -lm
 # Source
 #################
 
-CPP_FILES = $(wildcard	src/post_proc_types/*.cpp \
-						src/utils/*.cpp \
-						src/base/*.cpp)
+CPP_FILES = $(wildcard	src/utils/*.cpp \
+                        src/post_proc_types/*.cpp \
+            						src/base/*.cpp)
 
 #################
 # Lists
