@@ -1,6 +1,5 @@
 
 # include "SumField.hpp"
-# include <sstream>
 using namespace std;
 
 
@@ -13,6 +12,22 @@ SumField::SumField() : c()
 {
     GetPot InParams("inputPeso.dat");
     tagName = InParams("SumField/tagName","c1");
+
+    // open file for writing output
+    outfile;
+    std::stringstream filenamecombine;
+    filenamecombine << "postoutput/" << tagName << "_" << "SumField.dat";
+    string filename = filenamecombine.str();
+    outfile.open(filename.c_str(), ios::out);
+    if(!outfile.is_open())
+    {
+        cout << "could not open " << filename << " for writing";
+        cout << " sum post-processor output!\n";
+        throw 1;
+    }
+
+    // write output file header
+    outfile << "step," << tagName << "sum\n";
 }
 
 
@@ -23,7 +38,8 @@ SumField::SumField() : c()
 
 SumField::~SumField()
 {
-
+    // close output file
+    outfile.close();
 }
 
 
@@ -46,22 +62,6 @@ void SumField::setupPostProc()
 
 void SumField::executePostProc()
 {
-    // open file for writing output
-    ofstream outfile;
-    std::stringstream filenamecombine;
-    filenamecombine << "postoutput/" << tagName << "_" << "SumField.dat";
-    string filename = filenamecombine.str();
-    outfile.open(filename.c_str(), ios::out);
-    if(!outfile.is_open())
-    {
-        cout << "could not open " << filename << " for writing";
-        cout << " sum post-processor output!\n";
-        throw 1;
-    }
-
-    // write output file header
-    outfile << "step," << tagName << "sum\n";
-
     // run post processor on all vtk files
     int tagNum = 0;
     for (size_t f=0; f<c.vtkFiles.size(); f++) 
@@ -74,7 +74,4 @@ void SumField::executePostProc()
         tagNum = c.outputInterval*f;
         outfile << tagNum << "," << cSum << endl;
     }
-
-    // close output file
-    outfile.close();
 }

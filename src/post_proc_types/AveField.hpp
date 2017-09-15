@@ -4,6 +4,8 @@
 
 # include "../base/PesoBase.hpp"
 # include "../utils/vtkField.hpp"
+# include <sstream>
+# include <fstream>
 
 
 class AveField : public PesoBase {
@@ -12,6 +14,7 @@ class AveField : public PesoBase {
 
         vtkField c;
         std::string tagName;
+        std::ofstream outfile;
 
     public:
 

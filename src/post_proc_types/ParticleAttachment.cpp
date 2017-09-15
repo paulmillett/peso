@@ -1,7 +1,5 @@
 
 # include "ParticleAttachment.hpp"
-# include <sstream>
-# include <fstream>
 # include <cstdlib>
 # include <stdlib.h> // for system
 # include <cmath>
@@ -23,9 +21,24 @@ ParticleAttachment::ParticleAttachment() : c1(),c2(),xi(),p()
     partTagName = InParams("ParticleAttachment/partTagName","particles");
     outFileName = InParams("ParticleAttachment/outFileName","particleAttachment.dat");
     generateTypeInfo = InParams("ParticleAttachment/generateTypeInfo",0);
-    c1thresh = InParams("ParticleAttachment/c1thresh",0.8);
-    c2thresh = InParams("ParticleAttachment/c2thresh",0.8);
+    c1thresh = InParams("ParticleAttachment/c1thresh",0.5);
+    c2thresh = InParams("ParticleAttachment/c2thresh",0.5);
     cpthresh = InParams("ParticleAttachment/cpthresh",0.1);
+
+    // open file for writing output
+    outfile;
+    std::stringstream filenamecombine;
+    filenamecombine << "postoutput/" << outFileName;
+    string filename = filenamecombine.str();
+    outfile.open(filename.c_str(), ios::out | ios::trunc);
+    if(!outfile.is_open())
+    {
+        cout << "could not open " << filename << " for writing!";
+        throw 1;
+    }
+
+    // write output file header
+    outfile << "step,numOnInterface,fracOnInterface\n";
 }
 
 
@@ -36,6 +49,8 @@ ParticleAttachment::ParticleAttachment() : c1(),c2(),xi(),p()
 
 ParticleAttachment::~ParticleAttachment()
 {
+    // close output file
+    outfile.close();
 }
 
 
@@ -78,21 +93,6 @@ void ParticleAttachment::setupPostProc()
 
 void ParticleAttachment::executePostProc()
 {
-    // open file for writing output
-    ofstream outfile;
-    std::stringstream filenamecombine;
-    filenamecombine << "postoutput/" << outFileName;
-    string filename = filenamecombine.str();
-    outfile.open(filename.c_str(), ios::out | ios::trunc);
-    if(!outfile.is_open())
-    {
-        cout << "could not open " << filename << " for writing!";
-        throw 1;
-    }
-
-    // write output file header
-    outfile << "step,numOnInterface,fracOnInterface\n";
-
     // run post processor on all vtk files
     int tagNum = 0;
     for (size_t f=0; f<c1.vtkFiles.size(); f++) 
@@ -118,9 +118,6 @@ void ParticleAttachment::executePostProc()
         tagNum = c1.outputInterval*f;
         outfile << tagNum << "," << onInterface << "," << fracOn << endl;
     }
-
-    // close output file
-    outfile.close();
 }
 
 

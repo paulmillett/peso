@@ -6,6 +6,8 @@
 # include "../utils/vtkField.hpp"
 # include "../utils/vtkParticles.hpp"
 # include <vector>
+# include <sstream>
+# include <fstream>
 
 
 class ParticleAttachment : public PesoBase {
@@ -28,6 +30,7 @@ class ParticleAttachment : public PesoBase {
         double c1thresh;
         double c2thresh;
         double cpthresh;
+        std::ofstream outfile;
 
         // methods
         int calcNumOnInterface();
