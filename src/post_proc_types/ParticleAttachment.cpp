@@ -103,9 +103,6 @@ void ParticleAttachment::executePostProc()
         xi.readVTKFile(xi.vtkFiles.at(f));
         p.readVTKFile(p.vtkFiles.at(f));
         // calculate the number of particles on the interface
-        /* cout << "\n\n--------------------------------------\n"; */
-        /* cout << "\t reading file: " << p.vtkFiles[f] << endl; */
-        /* cout << "--------------------------------------\n\n"; */
         int onInterface = calcNumOnInterface();
         // append particle type info to particle vtk file
         if(generateTypeInfo)
@@ -141,19 +138,8 @@ int ParticleAttachment::calcNumOnInterface()
     // --------------------------------------------
 
     int onInter = 0;
-    // debug vars
-    /* bool check = false; */
-    /* bool repeat = true; */
-    // loop over all the particles and determine type
     for(int i=0; i<p.N; i++)
     {
-        /* if(check) */
-        /* { */
-        /*     cout << "\n-----------------------------------\n"; */
-        /*     cout << "       searchin around particle " << i+1 << endl; */
-        /*     cout << "-----------------------------------\n\n"; */
-        /* } */
-
         bool touchingC1 = false;
         bool touchingC2 = false;
         // determine particle parameters in terms of grid
@@ -163,11 +149,7 @@ int ParticleAttachment::calcNumOnInterface()
         int drad = ceil(p.rad[i]/c1.dx); // grid nodes per rad length
         int dInner = (drad-1)*(drad-1);
         int dOuter = (drad+1)*(drad+1);
-        /* if(i>1) */
-        /* { */
-        /*     cout << "drad\t"<<drad<<endl; */
-        /*     cout << "dOuter/dInner\t"<<dInner << "\t" << dOuter << endl; */
-        /* } */
+
         // determine grid box around particle
         int bWidth = drad+1;
         int nsx = cx - bWidth;
@@ -176,18 +158,6 @@ int ParticleAttachment::calcNumOnInterface()
         if(nsy<0) nsy = nsy + c1.ny;
         int nsz = cz - bWidth;
         if(nsz<0) nsz = nsz + c1.nz;
-
-        // debug code
-        /* if(check) */
-        /* { */
-        /*     cout << "\n\npx=" << p.r[3*i]<<"\tpy="<<p.r[3*i+1]; */
-        /*     cout << "\tpz=" << p.r[3*i+2] << "\n\n"; */
-        /*     cout << "\n\n\txs=" << nsx << "\txe=" << nsx+2*bWidth; */
-        /*     cout << "\n\n\tys=" << nsy << "\tye=" << nsy+2*bWidth; */
-        /*     cout << "\n\n\tzs=" << nsz << "\tze=" << nsz+2*bWidth; */
-        /*     cout << "\n\n"; */
-        /* } */
-
 
         // check in box to see if particle is touching c1 or c2
         int boxWidth = 2*bWidth + 1;
@@ -213,30 +183,12 @@ int ParticleAttachment::calcNumOnInterface()
                     int r2 = dx*dx + dy*dy + dz*dz;
                     if(r2 >= dInner && r2 <= dOuter)
                     {
-                        /* if(check) */
-                        /* { */
-                            /* cout << c1.a[ind] << "\t" << c2.a[ind] << "\t"; */
-                            /* cout << xi.a[ind] << "\t" << r2 << endl; */
-                        /* } */
                         if(c1.a[ind] > c1thresh && xi.a[ind] > cpthresh) 
-                        {
-                            /* cout << c1.a[ind] << "\t" << c2.a[ind] << "\t"; */
-                            /* cout << xi.a[ind] << "\t" << r2 << endl; */
                             touchingC1 = true;
-                        }
                         if(c2.a[ind] > c2thresh && xi.a[ind] > cpthresh) 
-                        {
-                            /* cout << c1.a[ind] << "\t" << c2.a[ind] << "\t"; */
-                            /* cout << xi.a[ind] << "\t" << r2 << endl; */
                             touchingC2 = true;
-                        }
                     }
                 }
-
-        /* if(check) */
-        /*     check = false; */
-        /* if(repeat) */
-        /*     repeat = false; */
         // set particle type
         if(touchingC1 && touchingC2)
         {
@@ -248,13 +200,7 @@ int ParticleAttachment::calcNumOnInterface()
         else if(!touchingC1 && touchingC2)
             particleType[i] = 2;
         else
-        {
             particleType[i] = 4; // an error has occured
-            /* check = true; */
-            /* if(repeat) */
-            /*     i--; */
-            /* throw 1; */
-        }
     }
 
     // return number of particles on the interface
