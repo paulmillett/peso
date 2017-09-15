@@ -100,8 +100,6 @@ void vtkField::readVTKFile(std::string filePath)
     // Read data:
     // -----------------------------------
 
-    int above = 0;
-    int below = 0;
     for (int i=0; i<nxyz; i++) 
     {
         infile >> a[i];
@@ -195,7 +193,10 @@ void vtkField::getFileInfo()
     size_t dot = lf.find(".");
     std::string steps = lf.substr(underScore+1,dot-1);
     numSimSteps = strtol(steps.c_str(),NULL,10);
-    outputInterval = numSimSteps/(numFiles-1);
+    if(numFiles > 1)
+        outputInterval = numSimSteps/(numFiles-1);
+    else
+        outputInterval = numSimSteps;
 }
 
 

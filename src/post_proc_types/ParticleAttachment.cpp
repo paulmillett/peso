@@ -5,6 +5,7 @@
 # include <cstdlib>
 # include <stdlib.h> // for system
 # include <cmath>
+# include <iomanip>
 using namespace std;
 
 
@@ -21,10 +22,10 @@ ParticleAttachment::ParticleAttachment() : c1(),c2(),xi(),p()
     xiTagName = InParams("ParticleAttachment/xiTagName","cp");
     partTagName = InParams("ParticleAttachment/partTagName","particles");
     outFileName = InParams("ParticleAttachment/outFileName","particleAttachment.dat");
-    deleteTypeInfo = InParams("ParticleAttachment/deleteTypeInfo",0);
-    c1thresh = InParams("ParticleAttachment/c1thresh",0.2);
-    c2thresh = InParams("ParticleAttachment/c2thresh",0.2);
-    cpthresh = InParams("ParticleAttachment/cpthresh",0.2);
+    generateTypeInfo = InParams("ParticleAttachment/generateTypeInfo",0);
+    c1thresh = InParams("ParticleAttachment/c1thresh",0.8);
+    c2thresh = InParams("ParticleAttachment/c2thresh",0.8);
+    cpthresh = InParams("ParticleAttachment/cpthresh",0.1);
 }
 
 
@@ -104,11 +105,15 @@ void ParticleAttachment::executePostProc()
         // calculate the number of particles on the interface
         int onInterface = calcNumOnInterface();
         // append particle type info to particle vtk file
-        if(deleteTypeInfo)
+        if(generateTypeInfo)
+        {
+            // first delete old info 
             deleteParticleTypeData(p.vtkFiles[f]);
-        writeParticleTypeData(p.vtkFiles[f]);
+            // write type info
+            writeParticleTypeData(p.vtkFiles[f]);
+        }
         // calculate the fraction of particles on the interface
-        int fracOn = (double)onInterface/(double)p.N;
+        double fracOn = (double)onInterface/(double)p.N;
         // write output:
         tagNum = c1.outputInterval*f;
         outfile << tagNum << "," << onInterface << "," << fracOn << endl;
@@ -133,40 +138,56 @@ int ParticleAttachment::calcNumOnInterface()
     // --------------------------------------------
 
     int onInter = 0;
-    // loop over all the particles and determine type
     for(int i=0; i<p.N; i++)
     {
         bool touchingC1 = false;
         bool touchingC2 = false;
         // determine particle parameters in terms of grid
         int cx = p.r[i*3+0]/c1.dx; // x-grid pos
-        int cy = p.r[i*3+0]/c1.dy; // y-grid pos
-        int cz = p.r[i*3+0]/c1.dz; // z-grid pos
+        int cy = p.r[i*3+1]/c1.dy; // y-grid pos
+        int cz = p.r[i*3+2]/c1.dz; // z-grid pos
         int drad = ceil(p.rad[i]/c1.dx); // grid nodes per rad length
+        int dInner = (drad-1)*(drad-1);
+        int dOuter = (drad+1)*(drad+1);
+
         // determine grid box around particle
-        int nsx = cx - (drad+1);
-        if(nsx<0) nsx = c1.nx+1+nsx;
-        int nsy = cy - (drad+1);
-        if(nsy<0) nsy = c1.ny+1+nsy;
-        int nsz = cz - (drad+1);
-        if(nsz<0) nsz = c1.nz+1+nsz;
+        int bWidth = drad+1;
+        int nsx = cx - bWidth;
+        if(nsx<0) nsx = nsx + c1.nx;
+        int nsy = cy - bWidth;
+        if(nsy<0) nsy = nsy + c1.ny;
+        int nsz = cz - bWidth;
+        if(nsz<0) nsz = nsz + c1.nz;
+
         // check in box to see if particle is touching c1 or c2
-        for (int ix=0; ix<2*(drad+1);ix++)
-            for (int iy=0; iy<2*(drad+1);iy++)
-                for (int iz=0; iz<2*(drad+1);iz++)
+        int boxWidth = 2*bWidth + 1;
+        for (int iz=0; iz<boxWidth;iz++)
+            for (int iy=0; iy<boxWidth;iy++)
+                for (int ix=0; ix<boxWidth;ix++)
                 {
                     int xn = nsx+ix;
-                    if(xn > c1.nx-1) xn = ix;
+                    if(xn > c1.nx-1) xn = xn - c1.nx;
                     int yn = nsy+iy;
-                    if(yn > c1.ny-1) yn = iy;
+                    if(yn > c1.ny-1) yn = yn - c1.ny;
                     int zn = nsz+iz;
-                    if(zn > c1.nz-1) zn = iz;
-                    int ind = iz*c1.ny*c1.nx+iy*c1.nx+ix;
-                    double& c1i = c1.a[ind];
-                    double& c2i = c2.a[ind];
-                    double& xii = xi.a[ind];
-                    if(c1i > c1thresh && xii > cpthresh) touchingC1 = true;
-                    if(c2i > c2thresh && xii > cpthresh) touchingC2 = true;
+                    if(zn > c1.nz-1) zn = zn - c1.nz;
+                    int ind = zn*c1.ny*c1.nx+yn*c1.nx+xn;
+
+                    // only check grid spaces around the surface
+                    int dx = abs(xn - cx);
+                    if(dx > bWidth) dx -= c1.nx;
+                    int dy = abs(yn - cy);
+                    if(dy > bWidth) dy -= c1.ny;
+                    int dz = abs(zn - cz);
+                    if(dz > bWidth) dz -= c1.nz;
+                    int r2 = dx*dx + dy*dy + dz*dz;
+                    if(r2 >= dInner && r2 <= dOuter)
+                    {
+                        if(c1.a[ind] > c1thresh && xi.a[ind] > cpthresh) 
+                            touchingC1 = true;
+                        if(c2.a[ind] > c2thresh && xi.a[ind] > cpthresh) 
+                            touchingC2 = true;
+                    }
                 }
         // set particle type
         if(touchingC1 && touchingC2)
@@ -179,10 +200,7 @@ int ParticleAttachment::calcNumOnInterface()
         else if(!touchingC1 && touchingC2)
             particleType[i] = 2;
         else
-        {
             particleType[i] = 4; // an error has occured
-            /* throw 1; */
-        }
     }
 
     // return number of particles on the interface
@@ -224,25 +242,6 @@ void ParticleAttachment::writeParticleTypeData(std::string filePath)
     for (int i=0; i<p.N; i++) 
     {
         outfile << particleType[i] << endl;
-    }
-}
-
-
-void ParticleAttachment::test()
-{
-    string filename = p.vtkFiles[0];
-    p.readVTKFile(filename);
-
-    cout << "\n\nfor file: " << filename << endl;
-    cout << "\n\tN = " << p.N << "\n\nposition data:\n";
-    for(int i=0; i<p.N; i++)
-    {
-        cout << i << " rx=" << p.r[i*3+0] << "\try=" << p.r[i*3+1] << "\trz=" << p.r[i*3+2] << endl;
-    }
-    cout << "\nradius data:\n";
-    for(int i=0; i<p.N; i++)
-    {
-        cout << i << "\t" <<  p.rad[i] << endl;
     }
 }
 

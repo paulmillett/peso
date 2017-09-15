@@ -21,7 +21,7 @@ class ParticleAttachment : public PesoBase {
         std::string xiTagName;
         std::string partTagName;
         std::string outFileName;
-        bool deleteTypeInfo;
+        bool generateTypeInfo;
         std::vector<int> particleType;
         void writeParticleTypeData(std::string filePath);
         void deleteParticleTypeData(std::string filePath);
@@ -38,7 +38,6 @@ class ParticleAttachment : public PesoBase {
         ~ParticleAttachment();
         void setupPostProc();
         void executePostProc();
-        void test();
 
 };
 
