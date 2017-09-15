@@ -1,0 +1,12 @@
+
+[ParticleAttachment]
+    app = true
+    c1TagName = c1              # c1 field data tag name
+    c2TagName = c2              # c2 field data tag name
+    xiTagName = cp              # particle field data tag name
+    partTagName = particles     # particle position and radius data tag name
+    generateTypeInfo = 1
+    c1thresh = 0.5
+    c2thresh = 0.5
+    cpthresh = 0.1
+[]
