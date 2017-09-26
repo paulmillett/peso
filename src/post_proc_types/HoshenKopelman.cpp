@@ -67,12 +67,11 @@ void HoshenKopelman::setupPostProc()
 void HoshenKopelman::executePostProc()
 {
     // run post processor on all vtk files
-    int tagNum = 0;
     for (size_t f=0; f<c.vtkFiles.size(); f++) 
     {
         // read in current file data:
         c.readVTKFile(c.vtkFiles.at(f));
-        int numClust = briansCodeStarts();
+        executeHK();
         int step = f*c.outputInterval;
         outfile << step << "," << numClust << ",";
         outfile << avgClusterVol << "," << phaseVol << endl;
@@ -124,17 +123,15 @@ void  HoshenKopelman::make_union(int x, int y, std::vector<int> &labels)
 // Brian's code:
 // -------------------------------------------------------------------------
 
-int HoshenKopelman::briansCodeStarts()
+void HoshenKopelman::executeHK()
 {
     clock_t begin = clock(); //start timer
 
     double n = c.nx*c.ny*c.nz;
     double kSpace = c.nx*c.ny;
     double jSpace = c.nx;
-    double loc = 0;
 
     double phase = 0;
-    double continuity = 0;
 
     double max_clusters = n / 2;
     vector<int> labels(max_clusters, 0); //vector to store equivalence classes
@@ -143,7 +140,6 @@ int HoshenKopelman::briansCodeStarts()
     vector<int> neighbors2(6,0);
     vector<double> allSizes(max_clusters,0);
 
-    int c_count = 0;
     int noise = 0;
     int max_neighbor = 0;
     int min_neighbor = 0;
@@ -217,7 +213,7 @@ int HoshenKopelman::briansCodeStarts()
             // Populate neighbors vector and count relevant neighbors
             neighbors = {up, down, left, right, top, bottom};
             neighbor_count = 0;
-            for (int m = 0; m < neighbors.size(); m++){
+            for (size_t m = 0; m < neighbors.size(); m++){
                 if (neighbors[m] > 0)
                     neighbor_count++;
             }
@@ -226,7 +222,7 @@ int HoshenKopelman::briansCodeStarts()
 
             sort(neighbors.begin(), neighbors.end());
             bool min_check = false;
-            for (int m = 0; m < neighbors.size(); m++){
+            for (size_t m = 0; m < neighbors.size(); m++){
                 if (min_check == false && neighbors[m] != 0){
                     min_neighbor = neighbors[m];
                     min_check = true;
@@ -246,7 +242,7 @@ int HoshenKopelman::briansCodeStarts()
             }
             // Determine smallest neighbor cluster value and merge relevant neighbors into that cluster
             else {
-                for (int m = 0; m < neighbors.size(); m++){
+                for (size_t m = 0; m < neighbors.size(); m++){
                     neighbors2[m] = neighbors[m];
                     if (neighbors2[m] == 0){
                         neighbors2[m] = 1000000;
@@ -254,7 +250,7 @@ int HoshenKopelman::briansCodeStarts()
                 }
                 int min_m = 0;
                 int min_n2 = *min_element(neighbors2.begin(), neighbors2.end());
-                for (int m = 0; m < neighbors2.size(); m++){
+                for (size_t m = 0; m < neighbors2.size(); m++){
                     if (neighbors2[m] == 1000000){
                         neighbors2[m] = 0;
                     }
@@ -262,7 +258,7 @@ int HoshenKopelman::briansCodeStarts()
                         min_m = m;
                     }
                 }
-                for (int m = 0; m < neighbors2.size(); m++){
+                for (size_t m = 0; m < neighbors2.size(); m++){
                     c.a[a] = neighbors[min_m];
                     allSizes[neighbors[min_m]] += 1;
                     if (neighbors[m] != 0){
@@ -303,7 +299,7 @@ int HoshenKopelman::briansCodeStarts()
 
     //Re-work labels to be consecutive
 
-    for (int i = 0; i < labels.size(); i++){
+    for (size_t i = 0; i < labels.size(); i++){
 
         labels2[i][1] = labels[i];
         labels2[i][0] = i;
@@ -315,7 +311,7 @@ int HoshenKopelman::briansCodeStarts()
     int new_label = 0;
     bool check = false;
 
-    for (int i = 2; i < labels.size(); i++){
+    for (size_t i = 2; i < labels.size(); i++){
 
         if(check == true && labels2[i][1] != old_label){
             check = false;
@@ -336,7 +332,7 @@ int HoshenKopelman::briansCodeStarts()
 
     sort(labels2.begin(), labels2.end(), [](const std::vector< int >& a, const std::vector< int >& b){ return a[0] < b[0]; });
 
-    for (int i = 0; i < labels.size(); i++){
+    for (size_t i = 0; i < labels.size(); i++){
         labels[i] = labels2[i][1];
     }
 
@@ -360,7 +356,7 @@ int HoshenKopelman::briansCodeStarts()
     /////////////////////////////////////////////////////
 
     vector< vector<double> > sizeAndLabels(new_max + 1, vector<double>(3,0)); //vector of vectors for rework of labels
-    for (int i = 0; i < sizes.size(); i++){
+    for (size_t i = 0; i < sizes.size(); i++){
         sizeAndLabels[i][1] = sizes[i];
         sizeAndLabels[i][0] = i;
     }
@@ -372,7 +368,7 @@ int HoshenKopelman::briansCodeStarts()
     {
         if (c.a[a] > 0)
         {
-            for ( int n = 1; n < sizes.size(); n++)
+            for (size_t n = 1; n < sizes.size(); n++)
             {
                 if (sizeAndLabels[n][0] == c.a[a])
                 {
@@ -392,7 +388,7 @@ int HoshenKopelman::briansCodeStarts()
     sizes[0] = 0;
 
     double clusterVolSum = 0.0;
-    for (int k = 1; k < sizes.size(); k++)
+    for (size_t k = 1; k < sizes.size(); k++)
     {
         sizes[k] = sizes[k]/c.nxyz;
         if (sizes[k] != 0)
@@ -402,6 +398,7 @@ int HoshenKopelman::briansCodeStarts()
     }
     phaseVol = clusterVolSum;
     avgClusterVol = clusterVolSum/new_max;
+    numClust = new_max;
 
 
     //////////////////////////////////////////////////////////////////////		
@@ -411,8 +408,6 @@ int HoshenKopelman::briansCodeStarts()
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
     cout << endl << elapsed_secs << endl;
-
-    return new_max;
 }
 
 
@@ -456,7 +451,7 @@ void HoshenKopelman::writeHK_VTK(int step)
     //	Write the data:
     // -----------------------------------
 
-    for (int a = 0; a < c.a.size(); a++)
+    for (size_t a = 0; a < c.a.size(); a++)
         outfile << c.a[a] << endl;
     outfile.close();
 }

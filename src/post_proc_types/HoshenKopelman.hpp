@@ -18,12 +18,13 @@ class HoshenKopelman : public PesoBase {
         std::string hkTagName;
         std::string range;
         std::ofstream outfile;
+        int numClust;
         double cutoff;
         double phaseVol;
         double avgClusterVol;
 
         // methods
-        int briansCodeStarts();
+        void executeHK();
         void make_union(int x, int y, std::vector<int> &labels);
         void writeHK_VTK(int step);
         int find(int x, std::vector<int> &labels); 
