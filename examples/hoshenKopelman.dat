@@ -1,0 +1,8 @@
+
+[HoshenKopelman]
+    app = true
+    tagName = c         # tagname for concentration vtk files 
+    hkTagName = hk_c    # tagname for HK vtk output files
+    range = greater     # "greater" than for c or "less" for c-1
+    cutoff = 0.5        # concentration threshold to consider point in a cluster
+[]
