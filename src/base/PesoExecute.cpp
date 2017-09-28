@@ -1,4 +1,6 @@
 
+# include <iostream>
+# include <stdexcept>
 # include "PesoExecute.hpp"
 # include "../utils/GetPot"
 # include <cstdlib>
@@ -16,7 +18,6 @@ PesoExecute::PesoExecute()
     // -----------------------------------
 
     std::system("mkdir -p postoutput");        // make output directory
-    std::system("exec rm -rf postoutput/*");   // remove any existing files
 
 }
 
@@ -55,7 +56,7 @@ void PesoExecute::createPesoObjects()
     // determine which sections are executable 'apps':
     // ------------------------------------------------
 
-    for (int i=0; i<sections.size(); i++) {
+    for (size_t i=0; i<sections.size(); i++) {
 
         // ---------------------------------------------
         // get string that stores value of "section/app"
@@ -71,6 +72,12 @@ void PesoExecute::createPesoObjects()
 
         if (appFlag == "true") {
             pesoapps.push_back(PesoBase::PesoObjectFactory(sections[i]));
+            if(pesoapps[i] == nullptr)
+            {
+                cout << "\nOne or more [Sections] in the input file is not ";
+                cout << "a valid peso app.\n";
+                throw runtime_error("A runtime error occurred in PesoExecute::CreatePesoObjects");
+            }
         }
 
     }
@@ -79,7 +86,7 @@ void PesoExecute::createPesoObjects()
     // loop over executable objects, setting up each:
     // ------------------------------------------------
 
-    for (int i=0; i<pesoapps.size(); i++) {
+    for (size_t i=0; i<pesoapps.size(); i++) {
         pesoapps[i]->setupPostProc();
     }
 
@@ -98,7 +105,7 @@ void PesoExecute::executePesoPostProc()
     // execute the postprocessors:
     // -----------------------------------
 
-    for (int i=0; i<pesoapps.size(); i++) {
+    for (size_t i=0; i<pesoapps.size(); i++) {
         pesoapps[i]->executePostProc();
     }
 

@@ -7,7 +7,7 @@
 # include "../utils/vtkParticles.hpp"
 # include <vector>
 # include <sstream>
-# include <fstream>
+# include <string>
 
 
 class ParticleAttachment : public PesoBase {

@@ -26,7 +26,6 @@ ParticleAttachment::ParticleAttachment() : c1(),c2(),xi(),p()
     cpthresh = InParams("ParticleAttachment/cpthresh",0.1);
 
     // open file for writing output
-    outfile;
     std::stringstream filenamecombine;
     filenamecombine << "postoutput/" << outFileName;
     string filename = filenamecombine.str();

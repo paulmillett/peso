@@ -14,7 +14,6 @@ SumField::SumField() : c()
     tagName = InParams("SumField/tagName","c1");
 
     // open file for writing output
-    outfile;
     std::stringstream filenamecombine;
     filenamecombine << "postoutput/" << tagName << "_" << "SumField.dat";
     string filename = filenamecombine.str();
