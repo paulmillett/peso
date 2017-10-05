@@ -21,7 +21,7 @@ HoshenKopelman::HoshenKopelman() : c()
 
     // open file for writing output
     std::stringstream filenamecombine;
-    filenamecombine << "postoutput/" << tagName << "_" << "HoshenKopelman.dat";
+    filenamecombine << "postoutput/" << tagName << "_" << "HoshenKopelman.csv";
     string filename = filenamecombine.str();
     outfile.open(filename.c_str(), ios::out | ios::trunc);
     if(!outfile.is_open())

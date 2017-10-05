@@ -15,7 +15,7 @@ SumField::SumField() : c()
 
     // open file for writing output
     std::stringstream filenamecombine;
-    filenamecombine << "postoutput/" << tagName << "_" << "SumField.dat";
+    filenamecombine << "postoutput/" << tagName << "_" << "SumField.csv";
     string filename = filenamecombine.str();
     outfile.open(filename.c_str(), ios::out);
     if(!outfile.is_open())
