@@ -5,6 +5,7 @@
 # include <ctime>
 using namespace std;
 
+# define PI 3.14159265359
 
 
 // -------------------------------------------------------------------------
@@ -18,6 +19,8 @@ HoshenKopelman::HoshenKopelman() : c()
     hkTagName = InParams("HoshenKopelman/hkTagName","hk");
     range = InParams("HoshenKopelman/range","greater");
     cutoff = InParams("HoshenKopelman/cutoff",0.1);
+    custom = InParams("HoshenKopelman/custom","none");
+    writeVtk = InParams("HoshenKopelman/writeVtk",1);
 
     // open file for writing output
     std::stringstream filenamecombine;
@@ -31,7 +34,10 @@ HoshenKopelman::HoshenKopelman() : c()
     }
 
     // write output file header
-    outfile << "step,numOfClusters,avgVol,phaseVol\n";
+    if(custom == "efieldThinFilm")
+        outfile << "step,numOfClusters,channelDensity,avgChanDiam,phaseVol\n";
+    else
+        outfile << "step,numOfClusters,avgVol,phaseVol\n";
 }
 
 
@@ -73,9 +79,22 @@ void HoshenKopelman::executePostProc()
         c.readVTKFile(c.vtkFiles.at(f));
         executeHK();
         int step = f*c.outputInterval;
-        outfile << step << "," << numClust << ",";
-        outfile << avgClusterVol << "," << phaseVol << endl;
-        writeHK_VTK(step);
+        if(custom == "efieldThinFilm")
+        {
+            double chanDens = calcChanDens();
+            double avgChanDiam = calcAvgDiam();
+            outfile << step << "," << numClust << "," << chanDens << ",";
+            outfile << avgChanDiam << "," << phaseVol << endl;
+        }
+        else
+        {
+            outfile << step << "," << numClust << ",";
+            outfile << avgClusterVol << "," << phaseVol << endl;
+        }
+        
+        // if directed, write HK vtk files for visualization
+        if(writeVtk)
+            writeHK_VTK(step);
     }
 
 }
@@ -407,7 +426,7 @@ void HoshenKopelman::executeHK()
     //////////////////////////////////////////////////////////////////////	
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    cout << endl << elapsed_secs << endl;
+    /* cout << endl << elapsed_secs << endl; */
 }
 
 
@@ -454,4 +473,37 @@ void HoshenKopelman::writeHK_VTK(int step)
     for (size_t a = 0; a < c.a.size(); a++)
         outfile << c.a[a] << endl;
     outfile.close();
+}
+
+
+
+// -------------------------------------------------------------------------
+// For thin film electric field simulations where minority domains become 
+// columns. Calculates the average channel diameter by assuming all channels
+// have spherical cross-sections with constant radius throughout their
+// hights.
+// -------------------------------------------------------------------------
+
+double HoshenKopelman::calcAvgDiam()
+{
+    double crossSectionalArea = ((double)c.nx*c.dx*(double)c.ny*c.dx);
+    double height = (double)c.nz*c.dz;
+    double sysVol = crossSectionalArea*height;
+    double channelVol = avgClusterVol*sysVol;
+    double avgD = sqrt((4.0*channelVol)/(PI*height));
+    return avgD;
+}
+
+
+
+// -------------------------------------------------------------------------
+// For thin film electric field simulations where minority domains become 
+// columns. Calculates the arial density of columns in the xy-plane.
+// -------------------------------------------------------------------------
+
+double HoshenKopelman::calcChanDens()
+{
+    double crossSectionalArea = ((double)c.nx*c.dx*(double)c.ny*c.dx);
+    double chanDen = (double)numClust/crossSectionalArea;
+    return chanDen;
 }

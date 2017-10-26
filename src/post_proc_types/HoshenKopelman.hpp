@@ -18,10 +18,12 @@ class HoshenKopelman : public PesoBase {
         std::string hkTagName;
         std::string range;
         std::ofstream outfile;
+        std::string custom;
         int numClust;
         double cutoff;
         double phaseVol;
         double avgClusterVol;
+        bool writeVtk;
 
         // methods
         void executeHK();
@@ -29,6 +31,8 @@ class HoshenKopelman : public PesoBase {
         void writeHK_VTK(int step);
         int find(int x, std::vector<int> &labels); 
         int new_cluster(int &max_label, std::vector<int> &labels);
+        double calcAvgDiam();
+        double calcChanDens();
 
     public:
 
