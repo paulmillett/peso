@@ -6,6 +6,7 @@
 # include "../utils/vtkField.hpp"
 # include <sstream>
 # include <fstream>
+# include <string>
 
 
 class SumField : public PesoBase {

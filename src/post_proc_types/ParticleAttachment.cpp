@@ -19,14 +19,13 @@ ParticleAttachment::ParticleAttachment() : c1(),c2(),xi(),p()
     c2TagName = InParams("ParticleAttachment/c2TagName","c2");
     xiTagName = InParams("ParticleAttachment/xiTagName","cp");
     partTagName = InParams("ParticleAttachment/partTagName","particles");
-    outFileName = InParams("ParticleAttachment/outFileName","particleAttachment.dat");
+    outFileName = InParams("ParticleAttachment/outFileName","particleAttachment.csv");
     generateTypeInfo = InParams("ParticleAttachment/generateTypeInfo",0);
     c1thresh = InParams("ParticleAttachment/c1thresh",0.5);
     c2thresh = InParams("ParticleAttachment/c2thresh",0.5);
     cpthresh = InParams("ParticleAttachment/cpthresh",0.1);
 
     // open file for writing output
-    outfile;
     std::stringstream filenamecombine;
     filenamecombine << "postoutput/" << outFileName;
     string filename = filenamecombine.str();

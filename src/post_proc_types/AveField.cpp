@@ -14,9 +14,8 @@ AveField::AveField() : c()
     tagName = InParams("AveField/tagName","c1");
 
     // open file for writing output
-    outfile;
     std::stringstream filenamecombine;
-    filenamecombine << "postoutput/" << tagName << "_" << "AveField.dat";
+    filenamecombine << "postoutput/" << tagName << "_" << "AveField.csv";
     string filename = filenamecombine.str();
     outfile.open(filename.c_str(), ios::out);
     if(!outfile.is_open())
